@@ -30,7 +30,7 @@ public class DebeziumConnectorConfig {
     @Value("${student.datasource.password}")
     private String studentDBPassword;
 
-    private String STUDENT_TABLE_NAME = "public.student";
+    private String STUDENT_TABLE_NAME = "student.students";
 
     /**
      * Student database connector.
@@ -40,11 +40,13 @@ public class DebeziumConnectorConfig {
     @Bean
     public io.debezium.config.Configuration studentConnector() {
         return io.debezium.config.Configuration.create()
-                .with("connector.class", "io.debezium.connector.postgresql.PostgresConnector")
+                .with("connector.class", "io.debezium.connector.mysql.MySqlConnector")
                 .with("offset.storage",  "org.apache.kafka.connect.storage.FileOffsetBackingStore")
-                .with("offset.storage.file.filename", "/Users/rbg831/Documents/Sohan/Projects/POC/embedded-debezium/student-cdc-relay/student-offset.dat")
+                .with("database.history", "io.debezium.relational.history.FileDatabaseHistory")
+                .with("database.history.file.filename", "/path/to/storage/dbhistory.dat")
+                .with("offset.storage.file.filename", "/path/to/storage/offset.dat")
                 .with("offset.flush.interval.ms", 60000)
-                .with("name", "student-postgres-connector")
+                .with("name", "my-sql-connector")
                 .with("database.server.name", studentDBHost+"-"+studentDBName)
                 .with("database.hostname", studentDBHost)
                 .with("database.port", studentDBPort)
